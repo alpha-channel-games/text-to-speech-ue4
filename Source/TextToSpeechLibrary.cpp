@@ -1,5 +1,6 @@
-#include "TextToSpeechPCH.h"
 #include "TextToSpeechLibrary.h"
+#include "TextToSpeechPCH.h"
+
 #include "TextToSpeechSoundWave.h"
 
 UTextToSpeechLibrary::UTextToSpeechLibrary(const class FObjectInitializer& PCIP) : Super(PCIP)
