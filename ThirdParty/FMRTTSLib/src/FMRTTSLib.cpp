@@ -72,8 +72,10 @@ namespace FMRTTSLib
 		hr = cpVoice->SetOutput(cpStream, FALSE);
 		checkAndThowException(hr);
 
-		SpeechVoiceSpeakFlags voiceFlags = SpeechVoiceSpeakFlags::SVSFDefault;
+		SpeechVoiceSpeakFlags voiceFlags = SpeechVoiceSpeakFlags::SVSFlagsAsync;
 		hr = cpVoice->Speak(textToRender, voiceFlags, NULL);
+		checkAndThowException(hr);
+		hr = cpVoice->WaitUntilDone(1000);
 		checkAndThowException(hr);
 
 		// Uncomment below to directly output speech
