@@ -2,19 +2,13 @@ using UnrealBuildTool;
 using System;
 using System.IO;
 
+
 namespace UnrealBuildTool.Rules
 {
 	public class TextToSpeech : ModuleRules
 	{
 		public TextToSpeech(ReadOnlyTargetRules Target) : base(Target)
 		{
-			PublicIncludePaths.AddRange(new string[]
-			{
-			});
-
-			PrivateIncludePaths.AddRange(new string[]
-			{
-			});
 
 			PublicDependencyModuleNames.AddRange(new string[]
 			{
@@ -25,40 +19,13 @@ namespace UnrealBuildTool.Rules
 				"Media"
 			});
 
-			PrivateDependencyModuleNames.AddRange(new string[]
-			{
-			});
-			
-			DynamicallyLoadedModuleNames.AddRange(new string[]
-			{
-			});
+            string architecture = Target.Platform == UnrealTargetPlatform.Win64 ? "x64" : "x86";
 
-			//Necessary to build Media Sound Wave - should be fixed in 4.11
-			//PrivateIncludePathModuleNames.Add("Media");
-			//PrivateIncludePathModuleNames.Add("Engine");
+            // sapihelper.h requires ATL
+            PublicAdditionalLibraries.Add(Target.WindowsPlatform.ToolChainDir + @"\atlmfc\lib\" + architecture + @"\atls.lib");
+            PrivateIncludePaths.Add(Target.WindowsPlatform.ToolChainDir + @"\atlmfc\include");
 
-			PrivatePCHHeaderFile = "TextToSpeechPCH.h";
-
-			LoadFMRTTSLib(Target);
-		}
-		
-		public bool LoadFMRTTSLib(ReadOnlyTargetRules Target)
-		{
-			if (Target.Platform != UnrealTargetPlatform.Win64 && Target.Platform != UnrealTargetPlatform.Win32)
-			{
-				PublicDefinitions.Add("WITH_FMRTTSLIB=0");
-				return false;
-			}
-
-			var FMRTTSLibFolder = Path.Combine(ModuleDirectory, @"..\ThirdParty", "FMRTTSLib");
-			var LibraryPath = Path.Combine(FMRTTSLibFolder, Target.Platform == UnrealTargetPlatform.Win64 ? "x64" : "x86");
-			PublicAdditionalLibraries.Add(Path.Combine(LibraryPath, "atls.lib"));
-			PublicAdditionalLibraries.Add(Path.Combine(LibraryPath, "FMRTTSLib.lib"));
-			PrivateIncludePaths.Add(Path.Combine(FMRTTSLibFolder, "include"));
-
-			PublicDefinitions.Add("WITH_FMRTTSLIB=1");
-
-			return true;
-		}
+            PrivatePCHHeaderFile = "TextToSpeechPCH.h";
+        }
 	}
 }
