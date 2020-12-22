@@ -76,7 +76,18 @@ namespace FMRTTSLib
 		checkAndThowException(hr);
 
 		hr = SpFindBestToken(SPCAT_VOICES, voiceRequiredAttributes, voiceOptionalAttributes, &cpToken);
-		checkAndThowException(hr);
+		if (hr == SPERR_NOT_FOUND)
+		{
+			// SPCAT_VOICES is defined in sapi.h as L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Speech\\Voices"
+			// Not all English Windows installations include voices in that registry location. (e.g. English(Canada) doesn't)
+			// The more modern(?) narration system uses the Speech_OneCore "mobile" voices
+			// This is where voices installed via Windows Settings->Time&Language->Speech are placed
+			// We will look there too
+			const wchar_t* ONECORE_VOICES = L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Speech_OneCore\\Voices";
+
+			hr = SpFindBestToken(ONECORE_VOICES, voiceRequiredAttributes, voiceOptionalAttributes, &cpToken);
+		}
+		if (FAILED(hr)) return NULL;
 
 		hr = cpVoice->SetVoice(cpToken);
 		cpToken->Release();
