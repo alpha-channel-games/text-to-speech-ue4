@@ -110,8 +110,10 @@ namespace FMRTTSLib
 		hr = cpVoice->SetOutput(cpStream, FALSE);
 		checkAndThowException(hr);
 
-		SpeechVoiceSpeakFlags voiceFlags = SpeechVoiceSpeakFlags::SVSFlagsAsync;
-		hr = cpVoice->Speak(textToRender, voiceFlags, NULL);
+		// While the default XML auto-detection works fine, it throws a non-fatal and rather non-descriptive exception:
+		// From KernelBase.dll: 0xE0000002 (parameters: 0xFFFFFFFF80045003)
+		// Explicitly specifying the parsing strategy quells it.
+		hr = cpVoice->Speak(textToRender, SPF_ASYNC | SPF_IS_XML | SPF_PARSE_SAPI, NULL);
 		checkAndThowException(hr);
 		hr = cpVoice->WaitUntilDone(1000);
 		checkAndThowException(hr);
